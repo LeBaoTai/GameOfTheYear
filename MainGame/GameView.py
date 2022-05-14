@@ -33,6 +33,7 @@ LAYER_NAME_MOVING_PLATFORMS = "Moving Platforms"
 LAYER_NAME_PLATFORMS = "Platforms"
 LAYER_NAME_COINS = "Coins"
 LAYER_NAME_BACKGROUND = "Background"
+LAYER_NAME_FOREGROUND = "Foreground"
 LAYER_NAME_LADDERS = "Ladders"
 LAYER_NAME_PLAYER = "Player"
 LAYER_NAME_ENEMIES = "Enemies"
@@ -138,7 +139,7 @@ class GameView(arcade.View):
             self.tileMap.tile_height * TILE_SCALING * PLAYER_START_Y + 100
         )
         self.scene.add_sprite(LAYER_NAME_PLAYER, self.playerSprite)
-        
+        self.scene.add_sprite_list_after(LAYER_NAME_PLAYER, LAYER_NAME_FOREGROUND)
         # -- Enemies
         enemies_layer = self.tileMap.object_lists[LAYER_NAME_ENEMIES]
 
