@@ -1,5 +1,5 @@
 import arcade
-import GameView
+import GameRun
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 680
 
@@ -24,5 +24,5 @@ class GameOverView(arcade.View):
 
     def on_mouse_press(self, _x, _y, _button, _modifiers):
         """Use a mouse press to advance to the 'game' view."""
-        game_view = GameView()
+        game_view = GameRun.GameView()
         self.window.show_view(game_view)

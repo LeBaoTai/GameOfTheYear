@@ -244,8 +244,8 @@
                  "type":"",
                  "visible":true,
                  "width":128,
-                 "x":4123.87878787879,
-                 "y":2197.33333333333
+                 "x":4139.0303030303,
+                 "y":2151.87878787878
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -267,12 +267,12 @@
                         {
                          "name":"boundary_left",
                          "type":"float",
-                         "value":2560
+                         "value":1280
                         }, 
                         {
                          "name":"boundary_right",
                          "type":"float",
-                         "value":3456
+                         "value":1600
                         }, 
                         {
                          "name":"change_x",
@@ -298,8 +298,8 @@
                  "type":"",
                  "visible":true,
                  "width":0,
-                 "x":2952.42424242425,
-                 "y":2183.75757575757
+                 "x":2945.75757575758,
+                 "y":2262.42424242424
                 }, 
                 {
                  "height":0,
@@ -310,12 +310,12 @@
                         {
                          "name":"boundary_left",
                          "type":"float",
-                         "value":4224
+                         "value":2112
                         }, 
                         {
                          "name":"boundary_right",
                          "type":"float",
-                         "value":4992
+                         "value":2495
                         }, 
                         {
                          "name":"change_x",
@@ -341,8 +341,8 @@
                  "type":"",
                  "visible":true,
                  "width":0,
-                 "x":4612,
-                 "y":1662
+                 "x":4606.66666666667,
+                 "y":1787.33333333333
                 }, 
                 {
                  "height":0,
@@ -353,12 +353,12 @@
                         {
                          "name":"boundary_left",
                          "type":"float",
-                         "value":5632
+                         "value":2020
                         }, 
                         {
                          "name":"boundary_right",
                          "type":"float",
-                         "value":6272
+                         "value":2230
                         }, 
                         {
                          "name":"change_x",
@@ -379,8 +379,8 @@
                  "type":"",
                  "visible":true,
                  "width":0,
-                 "x":4372.84848484848,
-                 "y":2211.03030303031
+                 "x":4226.18181818181,
+                 "y":2277.03030303031
                 }],
          "opacity":1,
          "type":"objectgroup",

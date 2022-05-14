@@ -4,15 +4,15 @@ import os
 import arcade
 
 #import file
-from Entity import *
-from GameOverView import GameOverView
+import GameCharacter
+import GameOver
 
 # vi tri bat dau cua nhan vat
 PLAYER_START_X = 2
 PLAYER_START_Y = 1
 
 # to do vat ly cua vien dan
-SPRITE_SCALING_LASER = 0.8
+SPRITE_SCALING_LASER = 1.5
 SHOOT_SPEED = 15
 BULLET_SPEED = 12
 BULLET_DAMAGE = 25
@@ -38,6 +38,7 @@ LAYER_NAME_LADDERS = "Ladders"
 LAYER_NAME_PLAYER = "Player"
 LAYER_NAME_ENEMIES = "Enemies"
 LAYER_NAME_BULLETS = "Bullets"
+LAYER_NAME_DONTTOUCH = "Don't Touch"
 
 #scaling player, tile,.....
 TILE_SCALING = 0.5
@@ -129,7 +130,8 @@ class GameView(arcade.View):
         self.shoot_timer = 0
 
         # Set up the player, specifically placing it at these coordinates.
-        self.playerSprite = PlayerCharacter()
+        self.scene.add_sprite_list_after(LAYER_NAME_PLAYER, LAYER_NAME_FOREGROUND)
+        self.playerSprite = GameCharacter.PlayerCharacter()
         self.playerSprite.center_x = (
             self.tileMap.tile_width * TILE_SCALING * PLAYER_START_X
         )
@@ -137,7 +139,6 @@ class GameView(arcade.View):
             self.tileMap.tile_height * TILE_SCALING * PLAYER_START_Y + 100
         )
         self.scene.add_sprite(LAYER_NAME_PLAYER, self.playerSprite)
-        self.scene.add_sprite_list_after(LAYER_NAME_PLAYER, LAYER_NAME_FOREGROUND)
         # -- Enemies
         enemies_layer = self.tileMap.object_lists[LAYER_NAME_ENEMIES]
 
@@ -147,9 +148,9 @@ class GameView(arcade.View):
             )
             enemy_type = my_object.properties["type"]
             if enemy_type == "robot":
-                enemy = RobotEnemy()
+                enemy = GameCharacter.RobotEnemy()
             elif enemy_type == "zombie":
-                enemy = ZombieEnemy()
+                enemy = GameCharacter.ZombieEnemy()
             enemy.center_x = math.floor(
                 cartesian[0] * TILE_SCALING * self.tileMap.tile_width
             )
@@ -325,7 +326,7 @@ class GameView(arcade.View):
                     SPRITE_SCALING_LASER,
                 )
 
-                if self.playerSprite.facing_direction == RIGHT_FACING:
+                if self.playerSprite.facing_direction == GameCharacter.RIGHT_FACING:
                     bullet.change_x = BULLET_SPEED
                 else:
                     bullet.change_x = -BULLET_SPEED
@@ -381,7 +382,6 @@ class GameView(arcade.View):
                 [
                     self.scene[LAYER_NAME_ENEMIES],
                     self.scene[LAYER_NAME_PLATFORMS],
-                    self.scene[LAYER_NAME_MOVING_PLATFORMS],
                 ],
             )
 
@@ -416,6 +416,8 @@ class GameView(arcade.View):
             [
                 self.scene[LAYER_NAME_COINS],
                 self.scene[LAYER_NAME_ENEMIES],
+                self.scene[LAYER_NAME_MOVING_PLATFORMS],
+                self.scene[LAYER_NAME_DONTTOUCH],
             ],
         )
 
@@ -424,7 +426,12 @@ class GameView(arcade.View):
 
             if self.scene[LAYER_NAME_ENEMIES] in collision.sprite_lists:
                 arcade.play_sound(self.game_over)
-                game_over = GameOverView()
+                game_over = GameOver.GameOverView()
+                self.window.show_view(game_over)
+                return
+            elif self.scene[LAYER_NAME_DONTTOUCH] in collision.sprite_lists:
+                arcade.play_sound(self.game_over)
+                game_over = GameOver.GameOverView()
                 self.window.show_view(game_over)
                 return
             else:

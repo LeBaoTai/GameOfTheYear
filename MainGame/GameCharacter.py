@@ -163,6 +163,6 @@ class PlayerCharacter(Entity):
 
         # Walking animation
         self.cur_texture += 0
-        if self.cur_texture > 1:
+        if self.cur_texture > 2:
             self.cur_texture = 0
         self.texture = self.walk_textures[self.cur_texture][self.facing_direction]
