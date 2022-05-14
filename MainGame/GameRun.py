@@ -130,7 +130,8 @@ class GameView(arcade.View):
         self.shoot_timer = 0
 
         # Set up the player, specifically placing it at these coordinates.
-        self.scene.add_sprite_list_after(LAYER_NAME_PLAYER, LAYER_NAME_FOREGROUND)
+        self.scene.add_sprite_list_before(LAYER_NAME_PLAYER, LAYER_NAME_FOREGROUND)
+        # self.scene.add_sprite_list_after(LAYER_NAME_PLAYER, LAYER_NAME_LADDERS)
         self.playerSprite = GameCharacter.PlayerCharacter()
         self.playerSprite.center_x = (
             self.tileMap.tile_width * TILE_SCALING * PLAYER_START_X

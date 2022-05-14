@@ -37,7 +37,7 @@ class Entity(arcade.Sprite):
 
             # Load textures for walking
             self.walk_textures = []
-            for i in range(1, 2):
+            for i in range(1, 3):
                 texture = load_texture_pair(f"{main_path}_walk{i}.png")
                 self.walk_textures.append(texture)
 
@@ -67,14 +67,13 @@ class Entity(arcade.Sprite):
         # self.set_hit_box([[-22, -64], [22, -64], [22, 28], [-22, 28]])
         self.set_hit_box(self.texture.hit_box_points)
 
+        self.should_update_walk = 0
 
 class Enemy(Entity):
     def __init__(self, name_folder, name_file):
 
         # Setup parent class
         super().__init__(name_folder, name_file)
-
-        self.should_update_walk = 0
 
     def update_animation(self, delta_time: float = 1 / 60):
 
@@ -162,7 +161,7 @@ class PlayerCharacter(Entity):
             return
 
         # Walking animation
-        self.cur_texture += 0
-        if self.cur_texture > 2:
+        self.cur_texture += 1
+        if self.cur_texture > 1:
             self.cur_texture = 0
         self.texture = self.walk_textures[self.cur_texture][self.facing_direction]
