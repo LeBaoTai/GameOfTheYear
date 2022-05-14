@@ -70,8 +70,6 @@ class GameView(arcade.View):
         self.down_pressed = False
         self.jump_needs_reset = False
         
-
-        
         #khai bao sprite Nhan vat
         self.playerSprite = None
         
