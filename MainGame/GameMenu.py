@@ -1,6 +1,5 @@
 #import file or module
 import arcade
-
 import GameRun
 
 #size window
@@ -18,10 +17,18 @@ class MainMenu(arcade.View):
         """Draw the menu"""
         self.clear()
         arcade.draw_text(
+            "GeaMonkee Studio present - A platform Game",
+            SCREEN_WIDTH / 2,
+            SCREEN_HEIGHT / 2 + 60,
+            arcade.color.BABY_BLUE,
+            font_size=30,
+            anchor_x="center",
+        )
+        arcade.draw_text(
             "Main Menu - Click to play game",
             SCREEN_WIDTH / 2,
             SCREEN_HEIGHT / 2,
-            arcade.color.BLACK,
+            arcade.color.RED_BROWN,
             font_size=30,
             anchor_x="center",
         )

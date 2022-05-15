@@ -177,6 +177,11 @@
                          "name":"point",
                          "type":"int",
                          "value":15
+                        }, 
+                        {
+                         "name":"type",
+                         "type":"string",
+                         "value":"OpenDoor"
                         }],
                  "rotation":0,
                  "type":"",
@@ -621,6 +626,34 @@
                  "width":128,
                  "x":5756,
                  "y":960
+                }, 
+                {
+                 "gid":2,
+                 "height":56,
+                 "id":37,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"boundary_bottom",
+                         "type":"float",
+                         "value":736
+                        }, 
+                        {
+                         "name":"boundary_top",
+                         "type":"float",
+                         "value":928
+                        }, 
+                        {
+                         "name":"change_y",
+                         "type":"float",
+                         "value":1
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":128,
+                 "x":1281.45454545455,
+                 "y":953.818181818182
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -660,7 +693,7 @@
          "y":0
         }],
  "nextlayerid":16,
- "nextobjectid":36,
+ "nextobjectid":38,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.8.4",

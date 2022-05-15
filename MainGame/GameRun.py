@@ -6,10 +6,12 @@ import arcade
 #import file
 import GameCharacter
 import GameOver
+import GameWin
 
 # vi tri bat dau cua nhan vat
 PLAYER_START_X = 2
 PLAYER_START_Y = 1
+HEART_LIMIT = 3
 
 # to do vat ly cua vien dan
 SPRITE_SCALING_LASER = 1.5
@@ -84,9 +86,11 @@ class GameView(arcade.View):
         self.gui_camera = None
         
         #khai bao diem va mang
-        self.score = 0
-        self.heart = 3
-
+        self.score = None
+        self.heart = None
+        
+        #check key to next map
+        self.openDoor = None
         
         # khai bao ban sung
         self.shoot_pressed = False
@@ -102,10 +106,11 @@ class GameView(arcade.View):
         self.collect_coin_sound = arcade.load_sound(":resources:sounds/coin1.wav")
         self.jump_sound = arcade.load_sound(":resources:sounds/jump1.wav")
         self.game_over = arcade.load_sound(":resources:sounds/gameover1.wav")
+        self.game_hurt = arcade.load_sound(':resources:sounds/hurt2.wav')
         self.shoot_sound = arcade.load_sound(":resources:sounds/hurt5.wav")
         self.hit_sound = arcade.load_sound(":resources:sounds/hit5.wav")
 
-    def setup(self, preScore = 0):
+    def setup(self, preScore = 0, heart = HEART_LIMIT):
         #camera
         self.camera = arcade.Camera(self.window.width, self.window.height)
         self.gui_camera = arcade.Camera(self.window.width, self.window.height)
@@ -133,10 +138,14 @@ class GameView(arcade.View):
         
         # Keep track of the score
         self.score = preScore
+        self.heart = heart
 
         # Shooting mechanics
         self.can_shoot = True
         self.shoot_timer = 0
+        
+        #check to next map
+        self.openDoor = False
 
         # Set up the player, specifically placing it at these coordinates.
         self.scene.add_sprite_list_before(LAYER_NAME_PLAYER, LAYER_NAME_FOREGROUND)
@@ -180,6 +189,7 @@ class GameView(arcade.View):
 
         # Add bullet spritelist to Scene
         self.scene.add_sprite_list(LAYER_NAME_BULLETS)
+        self.scene.add_sprite_list_before(LAYER_NAME_BULLETS, LAYER_NAME_FOREGROUND)
         
         # Create the 'physics engine'
         self.physicEngine = arcade.PhysicsEnginePlatformer(
@@ -441,9 +451,10 @@ class GameView(arcade.View):
 
             if self.scene[LAYER_NAME_ENEMIES] in collision.sprite_lists:
                 self.heart -= 1
-                arcade.play_sound(self.game_over)
+                arcade.play_sound(self.game_hurt)
                 if self.heart == 0:
-                    game_over = GameOver.GameOverView()
+                    arcade.play_sound(self.game_over)
+                    game_over = GameOver.GameOverView(self.score)
                     self.window.show_view(game_over)
                     return
                 else:
@@ -455,9 +466,10 @@ class GameView(arcade.View):
                         self.playerSprite.center_y = self.tileMap.tile_width * TILE_SCALING * PLAYER_START_Y
             elif self.scene[LAYER_NAME_DONTTOUCH] in collision.sprite_lists:
                 self.heart -= 1
-                arcade.play_sound(self.game_over)
+                arcade.play_sound(self.game_hurt)
                 if self.heart == 0:
-                    game_over = GameOver.GameOverView()
+                    arcade.play_sound(self.game_over)
+                    game_over = GameOver.GameOverView(self.score)
                     self.window.show_view(game_over)
                     return
                 else:
@@ -479,10 +491,21 @@ class GameView(arcade.View):
                     arcade.play_sound(self.collect_coin_sound)
             
             elif self.scene[LAYER_NAME_DOOR] in collision.sprite_lists:
-                self.level += 1
-                self.setup(self.score) 
+                if self.openDoor:
+                    
+                    self.checkpoint = False
+                    self.level += 1
+                    
+                    if self.level == 3:
+                        game_win = GameWin.GameWinView(self.score)
+                        self.window.show_view(game_win)
+                        return
+                    
+                    self.setup(self.score, HEART_LIMIT)
             
             elif self.scene[LAYER_NAME_COINS] in collision.sprite_lists:
+                if 'type' in collision.properties:
+                    self.openDoor = True
                 points = int(collision.properties["point"])
                 self.score += points
 
