@@ -14,7 +14,7 @@ PLAYER_START_Y = 1
 # to do vat ly cua vien dan
 SPRITE_SCALING_LASER = 1.5
 SHOOT_SPEED = 15
-BULLET_SPEED = 12
+BULLET_SPEED = 16
 BULLET_DAMAGE = 25
 
 # toc do vat ly cua nhan vat
@@ -39,6 +39,8 @@ LAYER_NAME_PLAYER = "Player"
 LAYER_NAME_ENEMIES = "Enemies"
 LAYER_NAME_BULLETS = "Bullets"
 LAYER_NAME_DONTTOUCH = "Don't Touch"
+LAYER_NAME_CHECKPOINT = 'Checkpoint'
+LAYER_NAME_DOOR = 'Door'
 
 #scaling player, tile,.....
 TILE_SCALING = 0.5
@@ -81,13 +83,20 @@ class GameView(arcade.View):
         self.camera = None
         self.gui_camera = None
         
-        #khai bao diem
+        #khai bao diem va mang
         self.score = 0
+        self.heart = 3
+
         
         # khai bao ban sung
         self.shoot_pressed = False
         self.can_shoot = False
         self.shoot_timer = 0
+        
+        #khai bao checkpoint 
+        self.checkpoint = None
+        self.characterCheckPointX = None
+        self.characterCheckPointY = None
 
         # khai bao am thanh game
         self.collect_coin_sound = arcade.load_sound(":resources:sounds/coin1.wav")
@@ -96,7 +105,7 @@ class GameView(arcade.View):
         self.shoot_sound = arcade.load_sound(":resources:sounds/hurt5.wav")
         self.hit_sound = arcade.load_sound(":resources:sounds/hit5.wav")
 
-    def setup(self):
+    def setup(self, preScore = 0):
         #camera
         self.camera = arcade.Camera(self.window.width, self.window.height)
         self.gui_camera = arcade.Camera(self.window.width, self.window.height)
@@ -123,7 +132,7 @@ class GameView(arcade.View):
         self.scene = arcade.Scene.from_tilemap(self.tileMap)   
         
         # Keep track of the score
-        self.score = 0
+        self.score = preScore
 
         # Shooting mechanics
         self.can_shoot = True
@@ -131,6 +140,8 @@ class GameView(arcade.View):
 
         # Set up the player, specifically placing it at these coordinates.
         self.scene.add_sprite_list_before(LAYER_NAME_PLAYER, LAYER_NAME_FOREGROUND)
+        self.scene.add_sprite_list_before(LAYER_NAME_ENEMIES, LAYER_NAME_FOREGROUND)
+
         self.playerSprite = GameCharacter.PlayerCharacter()
         self.playerSprite.center_x = (
             self.tileMap.tile_width * TILE_SCALING * PLAYER_START_X
@@ -139,6 +150,7 @@ class GameView(arcade.View):
             self.tileMap.tile_height * TILE_SCALING * PLAYER_START_Y + 100
         )
         self.scene.add_sprite(LAYER_NAME_PLAYER, self.playerSprite)
+        
         # -- Enemies
         enemies_layer = self.tileMap.object_lists[LAYER_NAME_ENEMIES]
 
@@ -168,12 +180,7 @@ class GameView(arcade.View):
 
         # Add bullet spritelist to Scene
         self.scene.add_sprite_list(LAYER_NAME_BULLETS)
-
-        # --- Other stuff
-        # # Set the background color
-        # if self.tileMap.background_color:
-        #     arcade.set_background_color(self.tileMap.background_color)
-
+        
         # Create the 'physics engine'
         self.physicEngine = arcade.PhysicsEnginePlatformer(
             self.playerSprite,
@@ -208,9 +215,19 @@ class GameView(arcade.View):
             score_text,
             10,
             10,
-            arcade.csscolor.BLACK,
+            arcade.csscolor.WHITE,
             18,
         )
+        
+        heart_text = f'Heart: {self.heart}'
+        arcade.draw_text (
+            heart_text,
+            200,
+            10,
+            arcade.color.WHITE,
+            18
+        )
+        
         
     def process_keychange(self):
         '''Ham xu ly tha/nhan phim hoac khi di chuyen tren thang'''
@@ -284,9 +301,6 @@ class GameView(arcade.View):
 
         self.process_keychange()
 
-    def on_mouse_scroll(self, x, y, scroll_x, scroll_y):
-        self.camera.zoom(-0.01 * scroll_y)
-
     def center_camera_to_player(self, speed=0.2):
         screen_center_x = self.camera.scale * (self.playerSprite.center_x - (self.camera.viewport_width / 2))
         screen_center_y = self.camera.scale * (self.playerSprite.center_y - (self.camera.viewport_height / 2))
@@ -359,7 +373,7 @@ class GameView(arcade.View):
             [LAYER_NAME_MOVING_PLATFORMS, LAYER_NAME_ENEMIES, LAYER_NAME_BULLETS]
         )
 
-        # See if the enemy hit a boundary and needs to reverse direction.
+        # dat gioi han di chuyen cua enemies
         for enemy in self.scene[LAYER_NAME_ENEMIES]:
             if (
                 enemy.boundary_right
@@ -417,6 +431,8 @@ class GameView(arcade.View):
                 self.scene[LAYER_NAME_COINS],
                 self.scene[LAYER_NAME_ENEMIES],
                 self.scene[LAYER_NAME_DONTTOUCH],
+                self.scene[LAYER_NAME_CHECKPOINT],
+                self.scene[LAYER_NAME_DOOR],
             ],
         )
 
@@ -424,17 +440,49 @@ class GameView(arcade.View):
         for collision in player_collision_list:
 
             if self.scene[LAYER_NAME_ENEMIES] in collision.sprite_lists:
+                self.heart -= 1
                 arcade.play_sound(self.game_over)
-                game_over = GameOver.GameOverView()
-                self.window.show_view(game_over)
-                return
+                if self.heart == 0:
+                    game_over = GameOver.GameOverView()
+                    self.window.show_view(game_over)
+                    return
+                else:
+                    if self.checkpoint:
+                        self.playerSprite.center_x = self.characterCheckPointX
+                        self.playerSprite.center_y = self.characterCheckPointY
+                    else:
+                        self.playerSprite.center_x = self.tileMap.tile_width * TILE_SCALING * PLAYER_START_X
+                        self.playerSprite.center_y = self.tileMap.tile_width * TILE_SCALING * PLAYER_START_Y
             elif self.scene[LAYER_NAME_DONTTOUCH] in collision.sprite_lists:
+                self.heart -= 1
                 arcade.play_sound(self.game_over)
-                game_over = GameOver.GameOverView()
-                self.window.show_view(game_over)
-                return
-            else:
+                if self.heart == 0:
+                    game_over = GameOver.GameOverView()
+                    self.window.show_view(game_over)
+                    return
+                else:
+                    if self.checkpoint:
+                        self.playerSprite.center_x = self.characterCheckPointX
+                        self.playerSprite.center_y = self.characterCheckPointY
+                    else:
+                        self.playerSprite.center_x = self.tileMap.tile_width * TILE_SCALING * PLAYER_START_X
+                        self.playerSprite.center_y = self.tileMap.tile_width * TILE_SCALING * PLAYER_START_Y
+            elif self.scene[LAYER_NAME_CHECKPOINT] in collision.sprite_lists:
+                    self.checkpoint = True
+                    self.characterCheckPointX = collision.center_x
+                    self.characterCheckPointY = collision.center_y
+                    points = int(collision.properties['point'])
+                    self.score += points
 
+                    # Xoa checkpoint
+                    collision.remove_from_sprite_lists()
+                    arcade.play_sound(self.collect_coin_sound)
+            
+            elif self.scene[LAYER_NAME_DOOR] in collision.sprite_lists:
+                self.level += 1
+                self.setup(self.score) 
+            
+            elif self.scene[LAYER_NAME_COINS] in collision.sprite_lists:
                 points = int(collision.properties["point"])
                 self.score += points
 
