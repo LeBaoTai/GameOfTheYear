@@ -319,9 +319,14 @@ class GameView(arcade.View):
             screen_center_x = 0
         if screen_center_y < 0:
             screen_center_y = 0
+        if screen_center_x > 1920:
+            screen_center_x = 1920
+        if screen_center_y > 576:
+            screen_center_y = 576
         player_centered = (screen_center_x, screen_center_y)    
 
         self.camera.move_to(player_centered, speed)
+
         
     def on_update(self, delta_time):
         """Movement and game logic"""
