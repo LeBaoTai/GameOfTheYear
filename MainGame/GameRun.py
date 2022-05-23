@@ -11,7 +11,7 @@ import GameWin
 # vi tri bat dau cua nhan vat
 PLAYER_START_X = 2
 PLAYER_START_Y = 1
-HEART_LIMIT = 3
+HEART_LIMIT = 5
 
 # to do vat ly cua vien dan
 SPRITE_SCALING_LASER = 1.5
@@ -322,7 +322,7 @@ class GameView(arcade.View):
         if screen_center_x > 1920:
             screen_center_x = 1920
         if screen_center_y > 576:
-            screen_center_y = 576
+            screen_center_y = 576   
         player_centered = (screen_center_x, screen_center_y)    
 
         self.camera.move_to(player_centered, speed)
@@ -485,15 +485,15 @@ class GameView(arcade.View):
                         self.playerSprite.center_x = self.tileMap.tile_width * TILE_SCALING * PLAYER_START_X
                         self.playerSprite.center_y = self.tileMap.tile_width * TILE_SCALING * PLAYER_START_Y
             elif self.scene[LAYER_NAME_CHECKPOINT] in collision.sprite_lists:
-                    self.checkpoint = True
-                    self.characterCheckPointX = collision.center_x
-                    self.characterCheckPointY = collision.center_y
-                    points = int(collision.properties['point'])
-                    self.score += points
+                self.checkpoint = True
+                self.characterCheckPointX = collision.center_x
+                self.characterCheckPointY = collision.center_y
+                points = int(collision.properties['point'])
+                self.score += points
 
-                    # Xoa checkpoint
-                    collision.remove_from_sprite_lists()
-                    arcade.play_sound(self.collect_coin_sound)
+                # Xoa checkpoint
+                collision.remove_from_sprite_lists()
+                arcade.play_sound(self.collect_coin_sound)
             
             elif self.scene[LAYER_NAME_DOOR] in collision.sprite_lists:
                 if self.openDoor:
